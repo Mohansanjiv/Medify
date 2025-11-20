@@ -1,17 +1,17 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import MainLayout from "./layouts/MainLayout";
-import Home from "./components/LendingPage/Home";
-;
+import { Outlet } from "react-router-dom";
+import { CssBaseline } from "@mui/material";
+import Footer from "./components/Footer/Footer";
+import DownloadApp from "./components/Sections/DownloadApp/DownloadApp";
 
-
-export default function App() {
+function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<Home />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <div>
+      <CssBaseline />
+      <Outlet />
+      <DownloadApp />
+      <Footer />
+    </div>
   );
 }
+
+export default App;
