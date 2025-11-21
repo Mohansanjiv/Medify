@@ -134,7 +134,7 @@ export default function SearchHospital() {
 
             {/* SEARCH BUTTON */}
             <Button
-                data-testid="search-button"
+                id="search"
                 type="submit"
                 variant="contained"
                 size="large"
