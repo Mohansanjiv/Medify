@@ -1,4 +1,4 @@
-import { Box, Container } from "@mui/material";
+import { Box, Container, Card, CardMedia } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 
@@ -14,38 +14,36 @@ export default function Offers() {
             <Container maxWidth="xl">
                 <Swiper
                     slidesPerView={1}
-                    spaceBetween={30}
+                    spaceBetween={20}
                     modules={[Pagination]}
                     pagination={{ clickable: true }}
                     breakpoints={{
-                        767: {
-                            slidesPerView: 3,
-                        },
+                        767: { slidesPerView: 3 },
                     }}
                 >
-                    <SwiperSlide>
-                        <Box component="img" src={offer1} />
-                    </SwiperSlide>
-
-                    <SwiperSlide>
-                        <Box component="img" src={offer2} />
-                    </SwiperSlide>
-
-                    <SwiperSlide>
-                        <Box component="img" src={offer1} />
-                    </SwiperSlide>
-
-                    <SwiperSlide>
-                        <Box component="img" src={offer2} />
-                    </SwiperSlide>
-
-                    <SwiperSlide>
-                        <Box component="img" src={offer1} />
-                    </SwiperSlide>
-
-                    <SwiperSlide>
-                        <Box component="img" src={offer2} />
-                    </SwiperSlide>
+                    {[offer1, offer2, offer1, offer2, offer1, offer2].map(
+                        (img, index) => (
+                            <SwiperSlide key={index}>
+                                <Card
+                                    sx={{
+                                        width: "100%",
+                                        borderRadius: 3,
+                                        boxShadow: 3,
+                                        overflow: "hidden",
+                                    }}
+                                >
+                                    <CardMedia
+                                        component="img"
+                                        image={img}
+                                        sx={{
+                                            height: 180,
+                                            objectFit: "cover",
+                                        }}
+                                    />
+                                </Card>
+                            </SwiperSlide>
+                        )
+                    )}
                 </Swiper>
             </Container>
         </Box>
