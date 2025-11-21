@@ -1,17 +1,16 @@
-import { MenuItem, Select, Button, InputAdornment, Box } from "@mui/material";
+import { MenuItem, Select, Button, Box, FormControl } from "@mui/material";
 import { useEffect, useState } from "react";
-import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
+import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
-//Component to search the hospitals based on State and City selection.
-//API used to fetch details of hospital and set the values in formData
 export default function SearchHospital() {
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
     const [formData, setFormData] = useState({ state: "", city: "" });
     const navigate = useNavigate();
 
+    // Fetch all states
     useEffect(() => {
         const fetchStates = async () => {
             try {
@@ -27,24 +26,25 @@ export default function SearchHospital() {
         fetchStates();
     }, []);
 
+    // Fetch cities whenever state changes
     useEffect(() => {
         const fetchCities = async () => {
             setCities([]);
             setFormData((prev) => ({ ...prev, city: "" }));
+
+            if (!formData.state) return;
+
             try {
                 const data = await axios.get(
                     `https://meddata-backend.onrender.com/cities/${formData.state}`
                 );
                 setCities(data.data);
-                // console.log("city", data.data);
             } catch (error) {
-                console.log("Error in fetching city:", error);
+                console.log("Error fetching cities:", error);
             }
         };
 
-        if (formData.state != "") {
-            fetchCities();
-        }
+        fetchCities();
     }, [formData.state]);
 
     const handleChange = (e) => {
@@ -65,66 +65,84 @@ export default function SearchHospital() {
             onSubmit={handleSubmit}
             sx={{
                 display: "flex",
-                gap: 4,
-                justifyContent: "space-between",
+                gap: 3,
                 flexDirection: { xs: "column", md: "row" },
+                alignItems: "center",
             }}
         >
-            <Select
-                displayEmpty
-                id="state"
-                name="state"
-                value={formData.state}
-                onChange={handleChange}
-                startAdornment={
-                    <InputAdornment position="start">
-                        <SearchIcon />
-                    </InputAdornment>
-                }
-                required
-                sx={{ minWidth: 200, width: "100%" }}
-            >
-                <MenuItem disabled value="" selected>
-                    State
-                </MenuItem>
-                {states.map((state) => (
-                    <MenuItem key={state} value={state}>
-                        {state}
+            {/* STATE DROPDOWN */}
+            <FormControl fullWidth>
+                <Select
+                    data-testid="state-dropdown"
+                    displayEmpty
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    required
+                    renderValue={(selected) =>
+                        selected || "State"
+                    }
+                    sx={{
+                        py: 1.2,
+                        borderRadius: 2,
+                        backgroundColor: "#f5f5f7",
+                    }}
+                >
+                    <MenuItem disabled value="">
+                        State
                     </MenuItem>
-                ))}
-            </Select>
 
-            <Select
-                displayEmpty
-                id="city"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                startAdornment={
-                    <InputAdornment position="start">
-                        <SearchIcon />
-                    </InputAdornment>
-                }
-                required
-                sx={{ minWidth: 200, width: "100%" }}
-            >
-                <MenuItem disabled value="" selected>
-                    City
-                </MenuItem>
-                {cities.map((city) => (
-                    <MenuItem key={city} value={city}>
-                        {city}
+                    {states.map((state) => (
+                        <MenuItem key={state} value={state}>
+                            {state}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+
+            {/* CITY DROPDOWN */}
+            <FormControl fullWidth>
+                <Select
+                    data-testid="city-dropdown"
+                    displayEmpty
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    required
+                    renderValue={(selected) =>
+                        selected || "City"
+                    }
+                    sx={{
+                        py: 1.2,
+                        borderRadius: 2,
+                        backgroundColor: "#f5f5f7",
+                    }}
+                >
+                    <MenuItem disabled value="">
+                        City
                     </MenuItem>
-                ))}
-            </Select>
 
+                    {cities.map((city) => (
+                        <MenuItem key={city} value={city}>
+                            {city}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+
+            {/* SEARCH BUTTON */}
             <Button
+                data-testid="search-button"
                 type="submit"
                 variant="contained"
                 size="large"
                 startIcon={<SearchIcon />}
-                sx={{ py: "15px", px: 8, flexShrink: 0 }}
-                disableElevation
+                sx={{
+                    px: 6,
+                    py: 1.8,
+                    borderRadius: 2,
+                    flexShrink: 0,
+                }}
             >
                 Search
             </Button>
