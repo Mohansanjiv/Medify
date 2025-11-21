@@ -73,7 +73,8 @@ export default function SearchHospital() {
             {/* STATE DROPDOWN */}
             <FormControl fullWidth>
                 <Select
-                    data-testid="state-dropdown"
+                    // data-testid="state"
+                    id="state"
                     displayEmpty
                     name="state"
                     value={formData.state}
@@ -103,7 +104,8 @@ export default function SearchHospital() {
             {/* CITY DROPDOWN */}
             <FormControl fullWidth>
                 <Select
-                    data-testid="city-dropdown"
+                    // data-testid="city-dropdown"
+                    id="city"
                     displayEmpty
                     name="city"
                     value={formData.city}
