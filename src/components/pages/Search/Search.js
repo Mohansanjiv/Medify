@@ -1,3 +1,4 @@
+
 import { Container, Stack, Box, Typography } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -12,9 +13,12 @@ import NavBar from "../../pages/NavBar/NavBar";
 
 const Search = () => {
     const [seachParams, setSearchParams] = useSearchParams();
+    const [state, setState] = useState(seachParams.get("state") || "");
+    const [city, setCity] = useState(seachParams.get("city") || "");
+
     const [hospitals, setHospitals] = useState([]);
-    const [state, setState] = useState(seachParams.get("state"));
-    const [city, setCity] = useState(seachParams.get("city"));
+    const [isLoading, setIsLoading] = useState(false);
+
     const availableSlots = {
         morning: ["11:30 AM"],
         afternoon: ["12:00 PM", "12:30 PM", "01:30 PM", "02:00 PM", "02:30 PM"],
@@ -23,23 +27,19 @@ const Search = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [bookingDetails, setBookingDetails] = useState({});
     const [showBookingSuccess, setShowBookingSuccess] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-
-    //API to fetch hospitals based on state and city selection 
     useEffect(() => {
         const getHospitals = async () => {
-            setHospitals([]);
             setIsLoading(true);
+            setHospitals([]);
             try {
-                const data = await axios.get(
+                const response = await axios.get(
                     `https://meddata-backend.onrender.com/data?state=${state}&city=${city}`
                 );
-                setHospitals(data.data);
-                setIsLoading(false);
+                setHospitals(response.data);
             } catch (err) {
-                console.log(err);
-                setIsLoading(false);
+                console.log("Error fetching hospitals:", err);
             }
+            setIsLoading(false);
         };
 
         if (state && city) {
@@ -48,11 +48,10 @@ const Search = () => {
     }, [state, city]);
 
     useEffect(() => {
-        setState(seachParams.get("state"));
-        setCity(seachParams.get("city"));
+        setState(seachParams.get("state") || "");
+        setCity(seachParams.get("city") || "");
     }, [seachParams]);
 
-    // show booking modal
     const handleBookingModal = (details) => {
         setBookingDetails(details);
         setIsModalOpen(true);
@@ -61,16 +60,15 @@ const Search = () => {
     return (
         <>
             <NavBar />
+
             <Box
                 sx={{
                     background: "linear-gradient(#EFF5FE, rgba(241,247,255,0.47))",
                     width: "100%",
-                    pl: 0,
                 }}
             >
                 <Box
                     sx={{
-                        position: "relative",
                         background: "linear-gradient(90deg, #2AA7FF, #0C8CE5)",
                         borderBottomLeftRadius: "1rem",
                         borderBottomRightRadius: "1rem",
@@ -82,7 +80,7 @@ const Search = () => {
                             background: "#fff",
                             p: 3,
                             borderRadius: 2,
-                            transform: "translatey(50px)",
+                            transform: "translateY(50px)",
                             mb: "50px",
                             boxShadow: "0 0 10px rgba(0,0,0,0.1)",
                         }}
@@ -92,33 +90,34 @@ const Search = () => {
                 </Box>
 
                 <Container maxWidth="xl" sx={{ pt: 8, pb: 10, px: { xs: 0, md: 4 } }}>
+
                     {hospitals.length > 0 && (
                         <Box sx={{ mb: 3 }}>
                             <Typography
                                 component="h1"
                                 fontSize={24}
-                                lineHeight={1.1}
                                 mb={2}
                                 fontWeight={500}
                             >
                                 {`${hospitals.length} medical centers available in `}
                                 <span style={{ textTransform: "capitalize" }}>
-                                    {city.toLocaleLowerCase()}
+                                    {city?.toLowerCase() ?? ""}
+
                                 </span>
                             </Typography>
+
                             <Stack direction="row" spacing={2}>
                                 <img src={icon} height={24} width={24} alt="icon" />
-                                <Typography color="#787887" lineHeight={1.4}>
-                                    Book appointments with minimum wait-time & verified doctor
-                                    details
+                                <Typography color="#787887">
+                                    Book appointments with minimum wait-time & verified doctor details
                                 </Typography>
                             </Stack>
                         </Box>
                     )}
 
                     <Stack alignItems="flex-start" direction={{ md: "row" }}>
+
                         <Stack
-                            mb={{ xs: 4, md: 0 }}
                             spacing={3}
                             width={{ xs: 1, md: "calc(100% - 384px)" }}
                             mr="24px"
@@ -146,7 +145,7 @@ const Search = () => {
                             )}
                         </Stack>
 
-                        <img src={cta} width={360} height="auto" alt="banner" />
+                        <img src={cta} width={360} alt="banner" />
                     </Stack>
                 </Container>
 
@@ -165,6 +164,6 @@ const Search = () => {
             </Box>
         </>
     );
-}
+};
 
 export default Search;
