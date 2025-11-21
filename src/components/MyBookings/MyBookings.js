@@ -1,74 +1,35 @@
-import { Container, Stack, Box, Typography } from "@mui/material";
-import axios from "axios";
+import { Box, Typography, Container, Stack } from "@mui/material";
+import HospitalCard from "../pages/HospitalCard/HospitalCard";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import HospitalCard from "../components/HospitalCard/HospitalCard";
-import icon from "../assets/tick.png";
-import cta from "../assets/cta.png";
-import SearchHospital from "../components/SearchHospital/SearchHospital";
-import BookingModal from "../components/BookingModal/BookingModal";
-import AutohideSnackbar from "../components/AutohideSnackbar/AutohideSnackbar";
-import NavBar from "../components/NavBar/NavBar";
+import cta from "../../assets/cta.png";
+import SearchBar from "../pages/SearchBar/SearchBar";
+import NavBar from "../pages/NavBar/NavBar";
 
-const Search = () => {
-  const [seachParams, setSearchParams] = useSearchParams();
-  const [hospitals, setHospitals] = useState([]);
-  const [state, setState] = useState(seachParams.get("state"));
-  const [city, setCity] = useState(seachParams.get("city"));
-  const availableSlots = {
-    morning: ["11:30 AM"],
-    afternoon: ["12:00 PM", "12:30 PM", "01:30 PM", "02:00 PM", "02:30 PM"],
-    evening: ["06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM"],
-  };
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [bookingDetails, setBookingDetails] = useState({});
-  const [showBookingSuccess, setShowBookingSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  //API to fetch hospitals based on state and city selection 
-  useEffect(() => {
-    const getHospitals = async () => {
-      setHospitals([]);
-      setIsLoading(true);
-      try {
-        const data = await axios.get(
-          `https://meddata-backend.onrender.com/data?state=${state}&city=${city}`
-        );
-        setHospitals(data.data);
-        setIsLoading(false);
-      } catch (err) {
-        console.log(err);
-        setIsLoading(false);
-      }
-    };
-
-    if (state && city) {
-      getHospitals();
-    }
-  }, [state, city]);
+export default function MyBookings() {
+  const [bookings, setBookings] = useState([]);
+  const [filteredBookings, setFilteredBookings] = useState([]);
 
   useEffect(() => {
-    setState(seachParams.get("state"));
-    setCity(seachParams.get("city"));
-  }, [seachParams]);
+    const localBookings = localStorage.getItem("bookings") || "[]";
+    setBookings(JSON.parse(localBookings));
 
-  // show booking modal
-  const handleBookingModal = (details) => {
-    setBookingDetails(details);
-    setIsModalOpen(true);
-  };
+  }, []);
 
+  useEffect(() => {
+    setFilteredBookings(bookings);
+  }, [bookings]);
+
+  //Separate page/component to render all the booked hospitals of user alogwith chosen date and time slot
+  //It utilises HospitalCard component to generate the cards with data
   return (
     <>
       <NavBar />
       <Box
-        sx={{
-          background: "linear-gradient(#EFF5FE, rgba(241,247,255,0.47))",
-          width: "100%",
-          pl: 0,
-        }}
+        sx={{ background: "linear-gradient(#EFF5FE, rgba(241,247,255,0.47))" }}
       >
         <Box
+          mb="50px"
+          pt={{ xs: 3, md: 1 }}
           sx={{
             position: "relative",
             background: "linear-gradient(90deg, #2AA7FF, #0C8CE5)",
@@ -76,46 +37,37 @@ const Search = () => {
             borderBottomRightRadius: "1rem",
           }}
         >
-          <Container
-            maxWidth="xl"
-            sx={{
-              background: "#fff",
-              p: 3,
-              borderRadius: 2,
-              transform: "translatey(50px)",
-              mb: "50px",
-              boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-            }}
-          >
-            <SearchHospital />
+          <Container maxWidth="xl" sx={{ px: { xs: 0, md: 5 } }}>
+            <Stack
+              direction={{ xs: "column", md: "row" }}
+              spacing={{ xs: 0, md: 12 }}
+              alignItems={{ xs: "center", md: "flex-end" }}
+            >
+              <Typography
+                component="h1"
+                pb={1}
+                fontSize={{ xs: 32, md: 40 }}
+                fontWeight={700}
+                color="#fff"
+              >
+                My Bookings
+              </Typography>
+              <Box
+                bgcolor="#fff"
+                p={3}
+                flexGrow={1}
+                borderRadius={2}
+                boxShadow="0 0 10px rgba(0,0,0,0.1)"
+                sx={{ translate: "0 50px" }}
+                width={{ xs: 1, md: "auto" }}
+              >
+                <SearchBar list={bookings} filterList={setFilteredBookings} />
+              </Box>
+            </Stack>
           </Container>
         </Box>
 
         <Container maxWidth="xl" sx={{ pt: 8, pb: 10, px: { xs: 0, md: 4 } }}>
-          {hospitals.length > 0 && (
-            <Box sx={{ mb: 3 }}>
-              <Typography
-                component="h1"
-                fontSize={24}
-                lineHeight={1.1}
-                mb={2}
-                fontWeight={500}
-              >
-                {`${hospitals.length} medical centers available in `}
-                <span style={{ textTransform: "capitalize" }}>
-                  {city.toLocaleLowerCase()}
-                </span>
-              </Typography>
-              <Stack direction="row" spacing={2}>
-                <img src={icon} height={24} width={24} alt="icon" />
-                <Typography color="#787887" lineHeight={1.4}>
-                  Book appointments with minimum wait-time & verified doctor
-                  details
-                </Typography>
-              </Stack>
-            </Box>
-          )}
-
           <Stack alignItems="flex-start" direction={{ md: "row" }}>
             <Stack
               mb={{ xs: 4, md: 0 }}
@@ -123,45 +75,26 @@ const Search = () => {
               width={{ xs: 1, md: "calc(100% - 384px)" }}
               mr="24px"
             >
-              {hospitals.length > 0 &&
-                hospitals.map((hospital) => (
+
+              {filteredBookings.length > 0 &&
+                filteredBookings.map((hospital) => (
                   <HospitalCard
                     key={hospital["Hospital Name"]}
                     details={hospital}
-                    availableSlots={availableSlots}
-                    handleBooking={handleBookingModal}
+                    booking={true}
                   />
                 ))}
 
-              {isLoading && (
+              {filteredBookings.length == 0 && (
                 <Typography variant="h3" bgcolor="#fff" p={3} borderRadius={2}>
-                  Loading...
-                </Typography>
-              )}
-
-              {!state && (
-                <Typography variant="h3" bgcolor="#fff" p={3} borderRadius={2}>
-                  Please select a state and city
+                  No Bookings Found!
                 </Typography>
               )}
             </Stack>
 
-            <img src={cta} width={360} height="auto" alt="banner" />
+            <img src={cta} width={360} height="auto" />
           </Stack>
         </Container>
-
-        <BookingModal
-          open={isModalOpen}
-          setOpen={setIsModalOpen}
-          bookingDetails={bookingDetails}
-          showSuccessMessage={setShowBookingSuccess}
-        />
-
-        <AutohideSnackbar
-          open={showBookingSuccess}
-          setOpen={setShowBookingSuccess}
-          message="Booking Successful"
-        />
       </Box>
     </>
   );

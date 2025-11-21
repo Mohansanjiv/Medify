@@ -1,17 +1,17 @@
 import { Container, Box, Stack } from "@mui/material";
-import HeroSlider from "../components/HeroSlider/HeroSlider";
-import SearchHospital from "../components/SearchHospital/SearchHospital";
-import FAQs from "../components/Sections/FAQs/FAQs";
-import OurFamilies from "../components/Sections/OurFamilies/OurFamilies";
-import Blogs from "../components/Sections/Blogs/Blogs";
-import PatientCaring from "../components/Sections/PatientCaring/PatientCaring";
-import Specialists from "../components/Sections/Specialists/Specialists";
-import Specialization from "../components/Sections/Specialization/Specialization";
-import Offers from "../components/Sections/Offers/Offers";
-import NavBar from "../components/NavBar/NavBar";
-import HeroServices from "../components/IconLayout/HeroServices";
+import HeroSlider from "../pages/HeroSlider/HeroSlider";
+import SearchHospital from "../pages/SearchHospital/SearchHospital";
+import FAQs from "../pages/Sections/FAQs/FAQs";
+import OurFamilies from "../pages/Sections/OurFamilies/OurFamilies";
+import Blogs from "../pages/Sections/Blogs/Blogs";
+import PatientCaring from "../pages/Sections/PatientCaring/PatientCaring";
+import Specialists from "../pages/Sections/Specialists/Specialists";
+import Specialization from "../pages/Sections/Specialization/Specialization";
+import Offers from "../pages/Sections/Offers/Offers";
+import NavBar from "../pages/NavBar/NavBar";
+import HeroServices from "../pages/IconLayout/HeroServices";
 
-  const Home =()=> {
+const Home = () => {
   return (
     <Box>
       <Box
@@ -39,17 +39,11 @@ import HeroServices from "../components/IconLayout/HeroServices";
           </Stack>
         </Container>
       </Box>
-
       <Offers />
-
       <Specialization />
-
       <Specialists />
-
       <PatientCaring />
-
       <Blogs />
-
       <OurFamilies />
 
       <FAQs />
